@@ -45,7 +45,7 @@
               // Skicka request till tile server
               // FIXME Sea level är statisk 
               // FIXME Detta ska bytas ut till den riktiga tile servern
-              return "http://frasen.net/havsniva/tile-test2.php?ne_lat=" + bounds.ne.lat + "&ne_lng="+ bounds.ne.lng + "&sw_lat=" + bounds.sw.lat + "&sw_lng=" + bounds.sw.lng + "sea_level=" + window.sea_level;
+              return "http://frasen.net/havsniva/tile-test2.php?se_lat=" + bounds.sw.lat + "&se_lng="+ bounds.ne.lng + "&nw_lat=" + bounds.ne.lat + "&nw_lng=" + bounds.sw.lng + "sea_level=" + window.sea_level;
           },
           tileSize: new google.maps.Size(256, 256),
           maxZoom: 16,
