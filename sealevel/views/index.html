@@ -74,7 +74,7 @@
         });
 
 
-      var debugCoordinates = new google.maps.ImageMapType({
+        var debugCoordinates = new google.maps.ImageMapType({
           getTileUrl: function(coord, zoom) {
               var normalizedCoord = getNormalizedCoord(coord, zoom);
               if (!normalizedCoord) {
@@ -111,10 +111,10 @@
 
         // Lägger till vår overlay
         map.overlayMapTypes.push(sealevelMapType);
-        map.overlayMapTypes.push(debugCoordinates);
+        // map.overlayMapTypes.push(debugCoordinates);
 
         window.sealevelMapType = sealevelMapType;
-        window.debugCoordinates = debugCoordinates;
+        // window.debugCoordinates = debugCoordinates;
       }
 
       // Normalizes the coords that tiles repeat across the x axis (horizontally)
