@@ -25,17 +25,17 @@ def tile():
     se_lat = float(request.query.se_lat)
     se_lng = float(request.query.se_lng)
 
-    if not (ELEVATION_TOPLEFT.lat < nw_lat < ELEVATION_BOTTOMRIGHT.lat):
-        abort(404, "Nw_lat out of bounds")
+    if not (ELEVATION_BOTTOMRIGHT.lat < nw_lat < ELEVATION_TOPLEFT.lat):
+        abort(404, "Nw_lat out of bounds %s" % nw_lat)
 
-    if not (ELEVATION_BOTTOMRIGHT.lon < nw_lng < ELEVATION_TOPLEFT.lon):
-        abort(404, "Nw_lng out of bounds")
+    if not (ELEVATION_TOPLEFT.lon < nw_lng < ELEVATION_BOTTOMRIGHT.lon):
+        abort(404, "Nw_lng out of bounds %s" % nw_lng)
 
-    if not (ELEVATION_TOPLEFT.lat < se_lat < ELEVATION_BOTTOMRIGHT.lat):
-        abort(404, "Se_lat out of bounds")
+    if not (ELEVATION_BOTTOMRIGHT.lat < se_lat < ELEVATION_TOPLEFT.lat):
+        abort(404, "Se_lat out of bounds %s" % se_lat)
 
-    if not (ELEVATION_BOTTOMRIGHT.lon < se_lng < ELEVATION_TOPLEFT.lon):
-        abort(404, "Se_lng out of bounds")
+    if not (ELEVATION_TOPLEFT.lon < se_lng < ELEVATION_BOTTOMRIGHT.lon):
+        abort(404, "Se_lng out of bounds %s" % se_lng)
 
     assert False, (nw_lat, nw_lng, se_lat, se_lng)
 
