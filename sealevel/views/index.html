@@ -81,7 +81,7 @@
               // Skicka request till tile server
               // FIXME Sea level är statisk
               // FIXME Detta ska bytas ut till den riktiga tile servern
-              var server = "http://frasen.net/havsniva/tile-test2.php";
+              var server = "/tile/";
               var variables = "?se_lng=" + bounds.sw.lat + "&se_lat="+ bounds.ne.lng + "&nw_lng=" + bounds.ne.lat + "&nw_lat=" + bounds.sw.lng + "sea_level=" + window.sea_level;
               return server + variables;
           },
