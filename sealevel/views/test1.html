@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Grand Canyon USGS</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <script src="https://maps.google.com/maps/api/js?sensor=false&key=AIzaSyByENaceAGzBV4btQpolWi5lRWcExE3NHw&libraries=places"></script>
+    <script src="http://www.maptiler.com/maptilerlayer/v1/index.js"></script>
+    <script>
+
+      function init() {
+        var opts = {
+          streetViewControl: false,
+          tilt: 0,
+          center: new google.maps.LatLng(0, 0),
+          zoom: 3
+        };
+
+        var map = new google.maps.Map(document.getElementById('map'), opts);
+          var mapBounds = new google.maps.LatLngBounds(
+              new google.maps.LatLng(30.98245136, 0.26379395),
+              new google.maps.LatLng(72.13343831, 25.10998535));
+          // var mapBounds = new google.maps.LatLngBounds(
+          //     new google.maps.LatLng(59.344395, 18.014660),
+          //     new google.maps.LatLng(59.308139, 18.120060));
+          var mapMinZoom = 1;
+          var mapMaxZoom = 16;
+        var overlay = new klokantech.MapTilerMapType(map, function(x,y,z) {
+          return "http://frasen.net/havsniva/tile-test.php?x=" + x + "&y="+ y + "&z=" + z; },
+        mapBounds, mapMinZoom, mapMaxZoom);
+
+        map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+        //var opacitycontrol = new klokantech.OpacityControl(map, overlay);
+
+        map.fitBounds(mapBounds);
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
+      }
+    </script>
+    <style>
+      html, body, #map { width:100%; height:100%; margin:0; padding:0; }
+      #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 300px;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+
+      .pac-container {
+        font-family: Roboto;
+      }
+    </style>
+  </head>
+  <body onload="init()">
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    <div id="map"></div>
+  </body>
+</html>
