@@ -33,35 +33,16 @@
     <div class="sealevel-controls" id="slider-vertical" style="height:200px;top:15%;"></div>
     <div id="map"></div>
     <script>
-    $(function() {
-
-      function updateSeaLevel(value) {
-          $( "#amount" ).val( value + " meter över havet" );
-          window.sealevel = value;
-      }
-
-      $( "#slider-vertical" ).slider({
-        orientation: "vertical",
-        range: "min",
-        min: -30,
-        max: 100,
-        value: 60,
-        slide: function( event, ui ) {
-          updateSeaLevel(ui.value);
-        }
-      });
-      updateSeaLevel(60);
-    });
-    </script>
-    <script>
 
       function initMap() {
+        window.sea_level = 60;
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 0, lng: 0},
           zoom: 6,
           streetViewControl: false,
           mapTypeId: google.maps.MapTypeId.BASIC
         });
+        window.map = map;
 
         var sealevelMapType = new google.maps.ImageMapType({
           getTileUrl: function(coord, zoom) {
@@ -109,8 +90,10 @@
               var bounds = MERCATOR.getTileBounds(tile);
 
               var server = "http://frasen.net/havsniva/tile-test2.php";
-              var variables = "?se_lng=" + bounds.sw.lat + "&se_lat="+ bounds.ne.lng + "&nw_lng=" + bounds.ne.lat + "&nw_lat=" + bounds.sw.lng + "sea_level=" + window.sea_level;
-              return server + variables;
+              var variables = "?se_lng=" + bounds.sw.lat + "&se_lat="+ bounds.ne.lng + "&nw_lng=" + bounds.ne.lat + "&nw_lat=" + bounds.sw.lng + "&sea_level=" + window.sea_level;
+              var url = server + variables
+              console.log(url);
+              return url;
           },
           tileSize: new google.maps.Size(256, 256),
           maxZoom: 16,
@@ -203,6 +186,26 @@
         }
 
       }
+      function updateSeaLevel(value) {
+          $( "#amount" ).val( value + " meter över havet" );
+          window.sea_level = value;
+          console.log(window.sea_level);
+          //google.maps.event.trigger(window.map,'resize');
+          //google.maps.event.notify(window.map, 'mapTypeId')
+          window.map.setZoom(window.map.getZoom());
+      }
+
+      $( "#slider-vertical" ).slider({
+        orientation: "vertical",
+        range: "min",
+        min: -30,
+        max: 100,
+        value: 60,
+        stop: function( event, ui ) {
+          updateSeaLevel(ui.value);
+        }
+      });
+      updateSeaLevel(60);
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByENaceAGzBV4btQpolWi5lRWcExE3NHw&callback=initMap">
