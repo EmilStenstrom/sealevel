@@ -1,0 +1,11 @@
+# These requirements are only needed to build the elevation data
+#
+# brew install gdal
+# Add "backend: TkAgg" till ~/.matplotlib/matplotlibrc
+fiona==1.6.3
+gdal==1.11.2
+geopandas==0.1.1
+georasters==0.4
+scipy==0.17.0
+pillow==3.1.1
+numpy==1.10.4
