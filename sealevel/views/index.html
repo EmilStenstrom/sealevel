@@ -2,11 +2,145 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Sealevel</title>
+    <title>Sveriges havsnivå</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <h1>Sealevel</h1>
-    <p>Sealevel</p>
-</body>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 0, lng: 0},
+          zoom: 6,
+          streetViewControl: false,
+          mapTypeId: google.maps.MapTypeId.BASIC
+        });
+
+        var sealevelMapType = new google.maps.ImageMapType({
+          getTileUrl: function(coord, zoom) {
+              var normalizedCoord = getNormalizedCoord(coord, zoom);
+              if (!normalizedCoord) {
+                return null;
+              }
+
+              // Skapa tileobject för uppslaget mot koordinater
+              var tile = {
+                        x: coord.x,
+                        y: coord.y,
+                        z: zoom};
+              // Slå upp koordinater
+              var bounds = MERCATOR.getTileBounds(tile);
+
+              // Skicka request till tile server
+              // FIXME Sea level är statisk 
+              // FIXME Detta ska bytas ut till den riktiga tile servern
+              return "http://frasen.net/havsniva/tile-test2.php?ne_lat=" + bounds.ne.lat + "&ne_lng="+ bounds.ne.lng + "&sw_lat=" + bounds.sw.lat + "&sw_lng=" + bounds.sw.lng + "sea_level=" + window.sea_level;
+          },
+          tileSize: new google.maps.Size(256, 256),
+          maxZoom: 16,
+          minZoom: 2,
+          radius: 738000,
+          name: 'Sea Level Sweden'
+        });
+
+        // Sätter bounds till Sverige /HF
+        var mapBounds = new google.maps.LatLngBounds(
+              new google.maps.LatLng(68.784144, 11.777344),
+              new google.maps.LatLng(54.572062, 21.269531));
+
+
+        map.fitBounds(mapBounds);
+
+        // Lägger till vår overlay
+        map.overlayMapTypes.push(sealevelMapType);
+      }
+
+      // Normalizes the coords that tiles repeat across the x axis (horizontally)
+      // like the standard Google map tiles.
+      function getNormalizedCoord(coord, zoom) {
+        var y = coord.y;
+        var x = coord.x;
+
+        // tile range in one direction range is dependent on zoom level
+        // 0 = 1 tile, 1 = 2 tiles, 2 = 4 tiles, 3 = 8 tiles, etc
+        var tileRange = 1 << zoom;
+
+        // don't repeat across y-axis (vertically)
+        if (y < 0 || y >= tileRange) {
+          return null;
+        }
+
+        // repeat across x-axis
+        if (x < 0 || x >= tileRange) {
+          x = (x % tileRange + tileRange) % tileRange;
+        }
+
+        return {x: x, y: y};
+      }
+
+      MERCATOR={
+
+        fromLatLngToPoint:function(latLng){
+           var siny =  Math.min(Math.max(Math.sin(latLng.lat* (Math.PI / 180)), 
+                                         -.9999),
+                                .9999);
+           return {
+            x: 128 + latLng.lng * (256/360),
+            y: 128 + 0.5 * Math.log((1 + siny) / (1 - siny)) * -(256 / (2 * Math.PI))
+           };
+        },
+
+        fromPointToLatLng: function(point){
+
+           return {
+            lat: (2 * Math.atan(Math.exp((point.y - 128) / -(256 / (2 * Math.PI)))) -
+                   Math.PI / 2)/ (Math.PI / 180),
+            lng:  (point.x - 128) / (256 / 360)
+           };
+
+        },
+
+        getTileAtLatLng:function(latLng,zoom){
+          var t=Math.pow(2,zoom),
+              s=256/t,
+              p=this.fromLatLngToPoint(latLng);
+              return {x:Math.floor(p.x/s),y:Math.floor(p.y/s),z:zoom};
+        },
+
+        getTileBounds:function(tile){
+          tile=this.normalizeTile(tile);
+          var t=Math.pow(2,tile.z),
+              s=256/t,
+              sw={x:tile.x*s,
+                  y:(tile.y*s)+s},
+              ne={x:tile.x*s+s,
+                  y:(tile.y*s)};
+              return{sw:this.fromPointToLatLng(sw),
+                     ne:this.fromPointToLatLng(ne)
+                    }
+        },
+        normalizeTile:function(tile){
+          var t=Math.pow(2,tile.z);
+          tile.x=((tile.x%t)+t)%t;
+          tile.y=((tile.y%t)+t)%t;
+          return tile;
+        }
+
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByENaceAGzBV4btQpolWi5lRWcExE3NHw&callback=initMap">
+    </script>
+  </body>
 </html>
