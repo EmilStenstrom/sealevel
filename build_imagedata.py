@@ -1,28 +1,25 @@
 """
     Before running this command you need to download the latest elevation
-    data from lantmateriet called nh_riks_Sweref_99_TM_geotiff. Put those
-    files into a directory in the project root and run
+    data from lantmateriet called nh_riks_Sweref_99_TM_geotiff.
+
+    Merge all the geotiff files into one big image:
+    $ mkdir nh_riks_WGS84_geotiff
+    $ gdal_merge.py -o nh_riks_Sweref_99_TM_geotiff/out.tif nh_riks_Sweref_99_TM_geotiff/*
+
+    Now warp the images from SWEREF99TM to WGS84
+    $ gdalwarp -t_srs "EPSG:4326" nh_riks_Sweref_99_TM_geotiffout.tif nh_riks_WGS84_geotiff/out.tif
+
+    And lastly produce the elevation file from that data:
     `python build_imagedata.py`
 """
 
-import os
 import georasters as gr
 import numpy as np
 
-DATA_IN = "nh_riks_Sweref_99_TM_geotiff"
+DATA_IN = "nh_riks_WGS84_geotiff/out.tif"
 OUTFILE = "elevation_data.npz"
 
-filenames = os.listdir(DATA_IN)
-# filenames = ["nh_61_3.tif"]
-
-rasters = []
-for filename in filenames:
-    print "Importings raster %s" % filename
-    file_path = os.path.join(DATA_IN, filename)
-    rasters.append(gr.from_file(file_path))
-
-print "Merging rasters"
-data = gr.union(rasters).raster
+data = gr.from_file(DATA_IN).raster
 
 # Data from lantmateriet has 10 decimals, none of them are significant
 data = data.round(decimals=0)
