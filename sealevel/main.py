@@ -9,8 +9,8 @@ INFILE = "elevation_data.npz"
 # ELEVATION_DATA = np.load(INFILE)["arr_0"]
 
 LatLon = namedtuple("LatLon", ["lat", "lon"])
-ELEVATION_TOPLEFT = LatLon(7.3987178, 69.4092519)
-ELEVATION_BOTTOMRIGHT = LatLon(27.5472122, 54.7969333)
+ELEVATION_TOPLEFT = LatLon(69.4092519, 7.3987178)
+ELEVATION_BOTTOMRIGHT = LatLon(54.7969333, 27.5472122)
 
 @route('/')
 @view('sealevel/views/index')
