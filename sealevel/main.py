@@ -64,9 +64,6 @@ def tile():
     image = Image.fromarray(data)
     image = image.convert("RGB")
 
-    data[data < 10] = 0
-    data[data >= 10] = 255
-
     mask = Image.fromarray(data)
     mask = mask.convert("L")
     image.putalpha(mask)
