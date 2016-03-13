@@ -23,10 +23,10 @@ def index():
     site = "%s://%s" % (request.urlparts.scheme, request.urlparts.netloc)
     return {"site": site}
 
-def _color(lat, lon):
+def _color(lat, lon, level):
     row = math.floor(abs(lat - ELEVATION_TOPLEFT.lat) * ELEVATION_PIXEL_PER_LAT)
     col = math.floor(abs(lon - ELEVATION_TOPLEFT.lon) * ELEVATION_PIXEL_PER_LON)
-    return ELEVATION_DATA[row, col]
+    return 255 if ELEVATION_DATA[row, col] <= level else 0
 
 @route('/tile/')
 def tile():
@@ -34,6 +34,7 @@ def tile():
     nw_lng = float(request.query.nw_lng)
     se_lat = float(request.query.se_lat)
     se_lng = float(request.query.se_lng)
+    level = int(request.query.sea_level)
 
     if not (ELEVATION_BOTTOMRIGHT.lat < nw_lat < ELEVATION_TOPLEFT.lat):
         abort(404, "Nw_lat out of bounds %s" % nw_lat)
@@ -51,16 +52,25 @@ def tile():
 
     nrows, ncols = 256, 256
 
-    data = np.zeros(shape=(nrows, ncols))
+    data = np.empty(shape=(nrows, ncols))
 
     for row in range(0, nrows):
         for col in range(0, ncols):
             lat = nw_lat - abs(nw_lat - se_lat) / nrows * row
             lon = nw_lng + abs(nw_lng - se_lng) / ncols * col
-            data[row, col] = _color(lat, lon)
+            color = _color(lat, lon, level)
+            data[row, col] = color
 
     image = Image.fromarray(data)
     image = image.convert("RGB")
+
+    data[data < 10] = 0
+    data[data >= 10] = 255
+
+    mask = Image.fromarray(data)
+    mask = mask.convert("L")
+    image.putalpha(mask)
+
     image.save(tile, format="PNG")
 
     tile.seek(0)
