@@ -17,6 +17,7 @@ import georasters as gr
 import numpy as np
 
 DATA_IN = "nh_riks_WGS84_geotiff/out.tif"
+# DATA_IN = "nh_riks_WGS84_geotiff/nh_61_3.tif"
 OUTFILE = "elevation_data.npz"
 
 data = gr.from_file(DATA_IN).raster
@@ -25,6 +26,9 @@ data = gr.from_file(DATA_IN).raster
 data = data.round(decimals=0)
 
 # MaskedArrays can't be save to disk, convert to ndarray
-data = data.filled(-1)
+data = data.filled(255)
+
+# We don't care about data larger than 255 meters, which will convert to white
+data = data.clip(0, 255)
 
 np.savez_compressed(OUTFILE, data)
