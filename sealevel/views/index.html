@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,7 +26,7 @@
 
   </head>
   <body>
-    <p class="sealevel-controls" style="top:7%;padding:10px;background-color:white;font-face:Helvectia;">
+    <p class="sealevel-controls" style="top:7%;padding:10px;background-color:white;font-family:Arial;font-size:12px;font-weight:bold;">
       <label for="amount">Havsnivå:</label>
       <input type="text" id="amount" readonly style="border:0; color:black; font-weight:bold;">
     </p>
@@ -35,7 +36,7 @@
     <script>
 
       function initMap() {
-        window.sea_level = 1;
+        window.sea_level = 0;
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 0, lng: 0},
           zoom: 6,
@@ -200,9 +201,9 @@
       $( "#slider-vertical" ).slider({
         orientation: "vertical",
         range: "min",
-        min: -30,
+        min: 0,
         max: 100,
-        value: 1,
+        value: 0,
         stop: function( event, ui ) {
           // Run only on stop
           updateSeaLevel(ui.value);
@@ -212,7 +213,7 @@
           $( "#amount" ).val( ui.value + " meter över havet" );
         }
       });
-      updateSeaLevel(1);
+      updateSeaLevel(0);
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByENaceAGzBV4btQpolWi5lRWcExE3NHw&callback=initMap">
