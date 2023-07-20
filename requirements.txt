@@ -1,4 +1,4 @@
 # These requirements are needed to run the web server
-numpy==1.21.0
+numpy==1.22.0
 bottle==0.12.20
 pillow==9.3.0
