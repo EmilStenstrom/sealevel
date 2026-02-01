@@ -4,7 +4,7 @@
 # Add "backend: TkAgg" till ~/.matplotlib/matplotlibrc
 fiona==1.6.3
 gdal==1.11.2
-geopandas==0.1.1
+geopandas==1.1.2
 georasters==0.4
 scipy==1.10.0
 numpy==1.22.0
