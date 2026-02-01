@@ -2,7 +2,7 @@
 #
 # brew install gdal
 # Add "backend: TkAgg" till ~/.matplotlib/matplotlibrc
-fiona==1.6.3
+fiona==1.10b2
 gdal==1.11.2
 geopandas==1.1.2
 georasters==0.4
